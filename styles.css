@@ -1,0 +1,562 @@
+/* styles.css */
+@font-face {
+  font-family: kb;
+  src: url(fonts/80-kb-Sharp.otf);
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: kb;
+  src: url(fonts/80-kb-SharpItalic.otf);
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: kb;
+  src: url(fonts/80-kb-SharpBold.otf);
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: kb;
+  src: url(fonts/80-kb-SharpBoldItalic.otf);
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: test;
+  src: url(fonts/TestSöhneMono-Halbfett.otf);
+}
+
+:root {
+  --ink: #231f20;
+  --paper: rgba(255, 255, 255, 0.94);
+  --gutter: clamp(16px, 5vw, 48px);
+  --section-gap: clamp(72px, 12vw, 160px);
+  --column-gap: clamp(24px, 4vw, 48px);
+  --bar-height: 64px; /* Updated from move.js with the real height of the filter bar */
+  --bottom-bar-height: 0px;
+  --background-opacity: 0.35; /* How strongly the grid and scribbles show. 1 is the full image. */
+  --number-size: clamp(32px, 4.5vw, 68px); /* Updated from move.js to match the grid page numbers */
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  background-color: #fff;
+  /* A white veil over the image. It looks like lower opacity, without slowing down scrolling.
+     The image is the small version: the 8000px original made scrolling stutter. */
+  background-image:
+    linear-gradient(rgb(255 255 255 / calc(1 - var(--background-opacity))), rgb(255 255 255 / calc(1 - var(--background-opacity)))),
+    url('png/grid img small.jpg');
+  background-size: auto, max(100%, 800px) auto; /* Keeps the grid from shrinking to nothing on phones */
+  background-position: top center;
+  background-repeat: repeat;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: kb, ui-monospace, Menlo, Consolas, monospace;
+  font-size: clamp(14px, 0.35vw + 13px, 17px);
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+p, h1, h2, blockquote {
+  margin: 0;
+}
+
+/* --- Sticker layer --- */
+#world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  z-index: 3; /* Stickers float above the text and hide it, until someone moves them */
+  display: block;
+  pointer-events: none; /* Dragging is handled in move.js, so text can still be selected between stickers */
+}
+
+html.is-grabbing,
+html.is-grabbing body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#page {
+  position: relative; /* No z-index here, so the camera button can rise above the stickers */
+  overflow: clip; /* The canvas can't stretch the page past its end */
+}
+
+#content {
+  width: min(1000px, 100% - 2 * var(--gutter));
+  margin-inline: auto;
+  padding-top: calc(var(--bar-height) + clamp(24px, 5vw, 64px));
+}
+
+#content.is-hidden {
+  display: none;
+}
+
+/* --- Controls --- */
+#filter-bar button,
+.mode-button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  border-radius: 0;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+#filter-bar button[aria-pressed="true"],
+.mode-button[aria-pressed="true"] {
+  background: var(--ink);
+  color: #fff;
+}
+
+@media (hover: hover) {
+  #filter-bar button:hover,
+  .mode-button:hover {
+    background: #ddd;
+    color: var(--ink);
+  }
+}
+
+button:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+#filter-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px var(--gutter);
+  pointer-events: none;
+}
+
+#filter-bar button {
+  pointer-events: auto;
+}
+
+.mode-button {
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#resetButton {
+  left: max(16px, 3%);
+}
+
+#organizeButton {
+  right: max(16px, 3%);
+}
+
+/* Not enough room beside the text: the mode buttons move to the bottom corners */
+@media (max-width: 1279px) {
+  :root {
+    --bottom-bar-height: 72px;
+  }
+
+  .mode-button {
+    top: auto;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    transform: none;
+  }
+
+  #resetButton {
+    left: 16px;
+  }
+
+  #organizeButton {
+    right: 16px;
+  }
+}
+
+/* --- Frame with corner squares --- */
+.frame {
+  position: relative;
+  border: 2px solid var(--ink);
+}
+
+.corner {
+  position: absolute;
+  width: var(--corner-size, 28px);
+  height: var(--corner-size, 28px);
+  border: 2px solid var(--ink);
+  background: #fff;
+}
+
+.corner-tl { top: 0; left: 0; transform: translate(-40%, -40%); }
+.corner-tr { top: 0; right: 0; transform: translate(40%, -40%); }
+.corner-bl { bottom: 0; left: 0; transform: translate(-40%, 40%); }
+.corner-br { bottom: 0; right: 0; transform: translate(40%, 40%); }
+
+/* --- Hero --- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--column-gap);
+  align-items: start;
+}
+
+.hero-title {
+  container-type: inline-size;
+  padding: 12px; /* Room for the corner squares, which stick out of the frame */
+}
+
+h1 {
+  padding: 0.3em 0.28em 0.32em;
+  font-size: 18cqw; /* "stickers" always fills the frame, whatever its width */
+  font-weight: 700;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.count {
+  width: fit-content;
+  margin: 20px auto 0;
+  padding-inline: 6px;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.intro p + p {
+  margin-top: 1.35em;
+}
+
+
+/* --- Ink rule --- */
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 1.5%;
+  width: min(100%, 240px);
+  margin-block: clamp(56px, 8vw, 96px);
+}
+
+.rule span {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.rule span:nth-child(1) { flex: 62; height: 5px; }
+.rule span:nth-child(2) { flex: 26; }
+.rule span:nth-child(3) { flex: 9; }
+
+/* --- Section titles, in the style of the grid page numbers --- */
+.tag {
+  width: fit-content;
+  max-width: 100%;
+  color: #000; /* Same black as the numbers */
+  font-family: test, kb, ui-monospace, Menlo, Consolas, monospace;
+  /* Same size as the numbers, but "The What" must still fit on the narrowest phones */
+  font-size: min(var(--number-size), (100vw - 2 * var(--gutter)) / 5);
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.tag:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 4px;
+}
+
+/* --- Typewriter text: invisible until typed, but already taking up its space --- */
+.untyped {
+  opacity: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.is-typing {
+  position: relative;
+}
+
+.is-typing::after {
+  content: '';
+  position: absolute;
+  width: 0.55em;
+  height: 1.1em;
+  margin-left: 0.05em;
+  background: var(--ink);
+}
+
+/* --- The What --- */
+.what-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--column-gap);
+  margin-top: 32px;
+  font-size: 0.9em;
+}
+
+.what-columns p + p {
+  margin-top: 1.35em;
+}
+
+/* --- The Who: reads 1-2-3-4-5 in the code, staggered in two columns on wide screens --- */
+.who {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: var(--column-gap);
+  row-gap: clamp(32px, 4vw, 48px);
+  margin-top: var(--section-gap);
+  font-weight: 700;
+}
+
+.who h2 {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: start;
+  z-index: 1;
+}
+
+.quote-1 { grid-column: 1; grid-row: 1 / span 3; }
+.quote-2 { grid-column: 2; grid-row: 2 / span 2; }
+.quote-3 { grid-column: 1; grid-row: 4; }
+.quote-4 { grid-column: 2; grid-row: 4 / span 2; }
+.quote-5 { grid-column: 1; grid-row: 5 / span 2; }
+
+.ref {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75em;
+  min-height: 2.6em;
+  margin-bottom: 1em;
+  font-weight: 400;
+}
+
+.bang {
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  line-height: 1;
+}
+
+.mark {
+  grid-column: 2;
+  grid-row: 6;
+  align-self: center;
+  justify-self: center;
+  width: clamp(64px, 9vw, 96px);
+  fill: var(--ink);
+}
+
+/* Justified like the original layout, only where columns are wide enough for it */
+@media (min-width: 800px) {
+  .what-columns p,
+  .quote p:not(.ref) {
+    text-align: justify;
+  }
+}
+
+/* --- Favourites --- */
+.favourites {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
+}
+
+.frame-square {
+  --corner-size: clamp(36px, 8vw, 56px);
+  width: min(70%, 420px);
+  aspect-ratio: 1;
+  border-width: 3px;
+}
+
+.frame-square .corner {
+  border-width: 3px;
+}
+
+.crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(var(--ink), var(--ink)) center top / 1px 40% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center bottom / 1px 40% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) left center / 40% 1px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) right center / 40% 1px no-repeat;
+}
+
+.favourites-label {
+  margin-top: clamp(40px, 6vw, 56px);
+  padding-inline: 6px;
+}
+
+/* Above the stickers, so a floating sticker can never hide or block it */
+#capture-button {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+@media (hover: hover) {
+  #capture-button:hover {
+    transform: scale(1.2);
+  }
+}
+
+#capture-button:active {
+  transform: scale(0.9);
+}
+
+.camera {
+  width: 24px;
+  height: 24px;
+  fill: var(--ink);
+  color: var(--ink);
+}
+
+.capture-status {
+  min-height: 1.35em; /* Keeps the page height steady when the message appears */
+  font-style: italic;
+  text-align: center;
+}
+
+/* Camera flash over the square */
+.flash {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.is-flashing .flash {
+  animation: camera-flash 0.35s ease-out;
+}
+
+@keyframes camera-flash {
+  from { opacity: 0.9; }
+  to { opacity: 0; }
+}
+
+/* --- Gyroscope permission message (iPhone only) --- */
+#gyro-info {
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  background: #fff;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* --- Single column --- */
+@media (max-width: 719px) {
+  .hero,
+  .what-columns,
+  .who {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-title {
+    width: min(100%, 420px);
+    margin-inline: auto;
+  }
+
+  .who h2,
+  .quote-1,
+  .quote-2,
+  .quote-3,
+  .quote-4,
+  .quote-5,
+  .mark {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: stretch;
+  }
+
+  .who h2 {
+    justify-self: start;
+  }
+
+  .mark {
+    justify-self: center;
+  }
+
+  .ref {
+    min-height: 0;
+    margin-bottom: 0.75em;
+  }
+}
+
+/* --- Phones: filters become one row that scrolls sideways --- */
+@media (max-width: 599px) {
+  #filter-bar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 10px 16px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--paper);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+  }
+
+  #filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  #filter-bar button {
+    flex: none;
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .mode-button {
+    min-height: 44px;
+    font-size: 14px;
+  }
+}

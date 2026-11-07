@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>City Stickers</title>
+  <meta name="description" content="City Stickers is a project that explores Mainz through the world of street stickers." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <nav id="filter-bar" aria-label="Filter stickers by category">
+    <button data-category="all" aria-pressed="true">+All+</button>
+    <button data-category="personal/artistic" aria-pressed="false">+personal/artistic+</button>
+    <button data-category="political" aria-pressed="false">+political+</button>
+    <button data-category="sports/city pride" aria-pressed="false">+sports/city pride+</button>
+    <button data-category="advertising" aria-pressed="false">+advertising+</button>
+    <button data-category="nett hier!" aria-pressed="false">+nett hier!+</button>
+  </nav>
+
+  <button id="organizeButton" class="mode-button">+Grid+</button>
+  <button id="resetButton" class="mode-button">+Reset+</button>
+
+  <div id="page">
+    <canvas id="world" aria-hidden="true"></canvas>
+
+    <main id="content">
+
+      <header class="hero">
+        <div class="hero-title">
+          <div class="frame">
+            <span class="corner corner-tl"></span>
+            <span class="corner corner-tr"></span>
+            <span class="corner corner-bl"></span>
+            <span class="corner corner-br"></span>
+            <h1>city stickers</h1>
+          </div>
+          <p class="count">[1- 100]</p>
+        </div>
+
+        <div class="intro">
+          <p><strong><em>City Stickers</em></strong> is a project that explores Mainz through the world of street stickers. I believe that if we allow something to appear on the walls of our city - whether it's a statement or a piece of art - it becomes a reflection of who we are, our opinions, and our beliefs, for better or worse.<br>
+          I found Mainz to be full of opinions. It was fascinating to learn about the city and its people through this practice of looking closely at something many people usually overlook. Stickers might seem small or unimportant, but they often carry interesting and unexpected stories.</p>
+          <p>This archive is just a starting point. It could grow endlessly, but for now, it reflects my short stay in the city.</p>
+          <p class="signature"><strong><em>h</em></strong></p>
+        </div>
+      </header>
+
+      <div class="rule" aria-hidden="true"><span></span><span></span><span></span></div>
+
+      <section class="what" aria-labelledby="what-title">
+        <h2 id="what-title" class="tag" tabindex="0">The What</h2>
+        <div class="what-columns">
+          <div>
+            <p>&gt;&gt;&gt;<strong><em>Sticker art</em></strong>, also known as slaps in a graffiti context, is a form of street art [1] in which an image or message is publicly displayed using stickers. These stickers may promote a political agenda, comment on a certein policy or issue, or comprise a subcategory of graffiti [2].</p>
+            <p>&gt;&gt;<strong><em>Sticker artists</em></strong> may hand-draw stickers, print them using a commercial printing service or at home with a computer printer and self-adhesive labels, or have them made commercially.</p>
+          </div>
+          <div>
+            <p>&gt;<strong><em>Any kind of blank sticker</em></strong> can be used for sticker art. Both name tags and Label 228s [3] are often used with hand-drawn art, and are quite hard to remove, leaving a white, sticky residue. Eggshell stickers are also a popular a type of sticker created specifically for street art. They are named because an attempt to remove them results in tiny pieces breaking off, like an eggshell. Eggshell stickers are made of a mixture of paper and plastic which protects them from the elements. Eggshell stickers longevity allows sticker art to be a part of many urban landscapes [4].</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="who" aria-labelledby="who-title">
+        <h2 id="who-title" class="tag" tabindex="0">The Who</h2>
+
+        <blockquote class="quote quote-1">
+          <p class="ref">[1]</p>
+          <p>&gt;“I don’t know where I could live other than Piter [informal name of St. Petersburg]. Let’s say, even in Moscow, I do not know, I do not like it at all, and I cannot imagine living anywhere but in Piter”—sticker artist Boris (male, 22) once said to me. In another conversation, Piotr (male, 20) mentioned that “the whole of Russia was open to me, but I chose St. Petersburg because my heart goes out to this city.” Irina (female, 30) shared her story as follows: “Of course, I moved to Piter, because I thought, damn, like I will have opportunity here for sure. &lt;.&nbsp;.&nbsp;.&gt; Well, I cannot imagine, I cannot imagine living in any other city at all. &lt;.&nbsp;.&nbsp;.&gt; I love Minsk, I might have lived there if I did not love living in St. Petersburg.” [male, 28]</p>
+        </blockquote>
+
+        <blockquote class="quote quote-2">
+          <p class="ref">[2]</p>
+          <p>&gt;&gt;”In general, some borders should be everywhere, and it often happens that sticker art damages something. Especially the guys with the tags. When they write their tag on all the facades, it is not always pretty. More often, the visible part looks like dirt. For example, in Rome, if you were there, everything is shitty. It is unpleasant to walk around the city; everything is covered with these tags.” [female, 31]</p>
+        </blockquote>
+
+        <blockquote class="quote quote-3">
+          <p class="ref">[3]</p>
+          <p>&gt;&gt;&gt;”That is, especially so in St. Petersburg, we have many places. . . you have to understand that you will only make it worse, and it is okay if it can be fixed, so in St. Petersburg, I think there must be greater responsibility for what you do, you need to understand.” [male, 22]</p>
+        </blockquote>
+
+        <blockquote class="quote quote-4">
+          <p class="ref">[4]</p>
+          <p>&gt;&gt;&gt;&gt;”Well, it is just that I was always amazed in Europe, where this [sticker art] is normally treated and considered as a part of art; it’s like going to a museum. You, for example, saw a combo [combination of stickers], stood up, looked, realized what sticker you like, and then left. For you, it was like a mini-museum of street art. &lt;.&nbsp;.&nbsp;.&gt; Because for now [in Russia] street art is not recognized as massively as classicism or realism. Now it is considered hooliganism. Well, here [in sticker art] as in everything, Russia is lagging behind for many years even in fashion, I really do not know, even in technology, even in lifestyle, yes. Also, Russia is lagging behind in art.” [female, 24]</p>
+        </blockquote>
+
+        <blockquote class="quote quote-5">
+          <p class="ref">[5] <span class="bang">!!!</span></p>
+          <p>&gt;&gt;&gt;&gt;&gt;”I experience a small adrenalin rush, especially when you, for example, walk along the busy Nevsky Prospekt, climb up somewhere, take a sticker out of a pocket and people throw some glances in your direction. You have, of course, some certain adrenalin rushes: it goes all over your body and you experience some certain pleasure because of this.” [male, 20]</p>
+        </blockquote>
+
+        <svg class="mark" viewBox="0 0 3 3" aria-hidden="true">
+          <rect x="0" y="0" width="1" height="1" />
+          <rect x="2" y="0" width="1" height="1" />
+          <rect x="1" y="1" width="1" height="1" />
+          <rect x="0" y="2" width="1" height="1" />
+        </svg>
+      </section>
+
+      <section class="favourites" aria-label="Your favourites">
+        <div id="favourites-frame" class="frame frame-square" aria-hidden="true">
+          <span class="corner corner-tl"></span>
+          <span class="corner corner-tr"></span>
+          <span class="corner corner-bl"></span>
+          <span class="corner corner-br"></span>
+          <span class="crosshair"></span>
+          <span class="flash"></span>
+        </div>
+        <p class="favourites-label"><em>&lt;your favourites?&gt;</em></p>
+        <button id="capture-button" type="button" aria-label="Save a picture of the square">
+          <svg class="camera" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 8V2h6M16 2h6v6M22 16v6h-6M8 22H2v-6" fill="none" stroke="currentColor" stroke-width="3" />
+            <path d="M6 8h3l1.5-2h3L15 8h3v10H6z" />
+            <circle cx="12" cy="13" r="2.5" fill="#fff" />
+          </svg>
+        </button>
+        <p id="capture-status" class="capture-status" role="status"></p>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script src="move.js"></script>
+</body>
+</html>
